@@ -2,20 +2,20 @@
 
 A multimodal deep learning framework for **Big Five personality trait prediction** using the **ChaLearn First Impressions V2** dataset.
 
-The project combines **audio** and **visual** information extracted from short video clips to predict continuous personality scores for the five Big Five traits.
+The project combines **audio** and **visual** information extracted from short video clips to predict continuous personality scores for the five Big Five personality traits.
 
 ---
 
-## Overview
+# Overview
 
 This repository implements a multimodal regression model in **PyTorch** for automatic personality trait prediction.
 
-Each video is represented by two complementary modalities:
+Each video is represented using two complementary modalities:
 
 - **Audio:** Mel Frequency Cepstral Coefficients (MFCCs)
-- **Video:** RGB frames processed by a pretrained ResNet18
+- **Video:** RGB frames processed by a pretrained ResNet18 backbone
 
-The extracted representations are fused and used to predict the following personality traits:
+The extracted features are fused to predict the following personality traits:
 
 - Extraversion
 - Neuroticism
@@ -23,11 +23,11 @@ The extracted representations are fused and used to predict the following person
 - Conscientiousness
 - Openness
 
-The implementation follows the original train/validation/test split provided by the ChaLearn First Impressions V2 dataset.
+The original train / validation / test split provided by the ChaLearn First Impressions V2 dataset is preserved throughout all experiments.
 
 ---
 
-## Dataset
+# Dataset
 
 The project uses the **ChaLearn First Impressions V2** dataset.
 
@@ -35,10 +35,10 @@ Each sample consists of:
 
 - approximately 15-second video clip
 - one speaker facing the camera
-- continuous annotations in the range **[0,1]**
-- five personality traits
+- continuous personality annotations in the range **[0,1]**
+- five Big Five personality traits
 
-Dataset structure:
+Dataset structure
 
 ```
 data/
@@ -48,18 +48,18 @@ data/
 
 ---
 
-## Data Preprocessing
+# Data Preprocessing
 
-### Audio
+## Audio
 
-For each video:
+For every video:
 
 - audio extraction
 - 24 MFCC coefficients
 - sample-wise standardization
-- zero-padding to fixed length
+- zero-padding to a fixed temporal length
 
-Final audio tensor:
+Final audio tensor
 
 ```
 (1, 24, 1319)
@@ -67,17 +67,17 @@ Final audio tensor:
 
 ---
 
-### Video
+## Video
 
-For each video:
+For every video:
 
-- uniform sampling of 6 frames
+- uniform sampling of 6 RGB frames
 - resize
 - random crop during training
 - center crop during validation/testing
 - normalization
 
-Final video tensor:
+Final video tensor
 
 ```
 (6, 3, 128, 128)
@@ -87,7 +87,7 @@ Final video tensor:
 
 # Model Architecture
 
-The model consists of four modules.
+The proposed model consists of four modules.
 
 ```
                +----------------+
@@ -122,67 +122,69 @@ The model consists of four modules.
 
 ---
 
-## Audio Encoder
+# Audio Encoder
 
-- Convolutional neural network
+- Convolutional Neural Network
 - Batch Normalization
 - ReLU activations
 - MaxPooling
 - Fully connected projection
 
-Output:
+Output
 
 ```
-256-dimensional feature vector
+256-dimensional embedding
 ```
 
 ---
 
-## Video Encoder
+# Video Encoder
 
-Visual backbone:
+Visual backbone
 
 - pretrained ResNet18
 
-Training strategy:
+Training strategy
 
-- pretrained ImageNet weights
+- ImageNet pretrained weights
 - frozen backbone
-- only the final ResNet block (Layer4) fine-tuned
+- Layer4 fine-tuning
 
-Temporal aggregation:
+Temporal aggregation
 
 - average pooling over the sampled frames
 
-Output:
+Output
 
 ```
-256-dimensional feature vector
+256-dimensional embedding
 ```
 
 ---
 
-## Fusion
+# Fusion
 
-The audio and visual embeddings are concatenated:
+The audio and video embeddings are concatenated
 
 ```
 256 + 256 → 512
 ```
 
+before being passed to the regression head.
+
 ---
 
-## Regression Head
+# Regression Head
 
 Fully connected layers predict the five personality traits.
 
-Final activation:
+Final activation
 
 ```
 Sigmoid
 ```
 
-to constrain predictions within
+to constrain the predictions inside
 
 ```
 [0,1]
@@ -192,31 +194,40 @@ to constrain predictions within
 
 # Training
 
-Loss:
+Loss
 
 ```
-L1Loss (Mean Absolute Error)
+L1 Loss (Mean Absolute Error)
 ```
 
-Optimizer:
+Optimizer
 
 ```
 Adam
 ```
 
-Learning rate:
+Initial learning rate
 
 ```
 1e-3
 ```
 
-Training epochs:
+Learning-rate scheduler
+
+```
+ReduceLROnPlateau
+factor = 0.5
+patience = 3
+minimum LR = 1e-5
+```
+
+Training epochs
 
 ```
 20
 ```
 
-Metric:
+Evaluation metric
 
 ```
 1 − MAE
@@ -226,45 +237,70 @@ Metric:
 
 # Results
 
-## Best Test Performance
+## Final Test Performance
 
 | Metric | Value |
-|---------|--------|
-| MAE | **0.1000** |
-| 1 − MAE | **0.9000** |
+|---------|-------:|
+| **MAE** | **0.0982** |
+| **1 − MAE** | **0.9018** |
 
-Trait-wise MAE:
+Trait-wise MAE
 
 | Trait | MAE |
 |------|------:|
-| Extraversion | 0.1015 |
-| Neuroticism | 0.1007 |
-| Agreeableness | 0.0957 |
-| Conscientiousness | 0.1053 |
-| Openness | 0.0968 |
+| Extraversion | **0.0999** |
+| Neuroticism | **0.0984** |
+| Agreeableness | **0.0946** |
+| Conscientiousness | **0.1024** |
+| Openness | **0.0954** |
 
 ---
 
-## Prediction Analysis
+## Pearson Correlation
 
-To better understand the model behavior, the repository provides a comprehensive analysis of the predictions, including:
+| Trait | Pearson r |
+|------|----------:|
+| Extraversion | **0.558** |
+| Neuroticism | **0.597** |
+| Agreeableness | **0.462** |
+| Conscientiousness | **0.549** |
+| Openness | **0.568** |
 
-- Prediction vs. Ground Truth scatter plots
+---
+
+# Prediction Analysis
+
+To better understand the model behaviour, the repository automatically generates:
+
+- Prediction vs Ground Truth scatter plots
 - Prediction and Ground Truth distributions
 - Residual plots
 - Pearson correlation statistics
 
 An example for the **Extraversion** trait is shown below.
 
-| Prediction vs. Ground Truth | Distribution | Residuals |
-|:---------------------------:|:------------:|:---------:|
-| <img src="outputs/figures/prediction_analysis/scatter_extraversion_concat.png" width="300"> | <img src="outputs/figures/prediction_analysis/hist_extraversion_concat.png" width="300"> | <img src="outputs/figures/prediction_analysis/residuals_extraversion_concat.png" width="300"> |
+| Prediction vs Ground Truth | Distribution | Residuals |
+|:--------------------------:|:------------:|:---------:|
+| <img src="outputs/figures/prediction_analysis_plateau/scatter_extraversion_concat_plateau.png" width="300"> | <img src="outputs/figures/prediction_analysis_plateau/hist_extraversion_concat_plateau.png" width="300"> | <img src="outputs/figures/prediction_analysis_plateau/residuals_extraversion_concat_plateau.png" width="300"> |
 
-Equivalent figures are automatically generated for all five personality traits and are available in:
+Equivalent figures are automatically generated for all five personality traits and are available in
 
-```text
-outputs/figures/prediction_analysis/
 ```
+outputs/figures/prediction_analysis_plateau/
+```
+
+---
+
+# Experimental Comparison
+
+Several configurations were evaluated during development.
+
+| Configuration | MAE | 1 − MAE |
+|---------------|----:|---------:|
+| Baseline concatenation model | **0.1000** | **0.9000** |
+| **+ ReduceLROnPlateau (final model)** | **0.0982** | **0.9018** |
+
+The final model achieved the best overall performance by introducing a **ReduceLROnPlateau** learning-rate scheduler, allowing the optimizer to reduce the learning rate automatically whenever the validation MAE stopped improving.
 
 ---
 
@@ -286,7 +322,7 @@ outputs/figures/prediction_analysis/
 
 # Main Scripts
 
-## Training
+Training
 
 ```
 python scripts/train.py
@@ -298,41 +334,31 @@ or
 sbatch slurm/train.sbatch
 ```
 
----
-
-## Evaluation
+Evaluation
 
 ```
 python scripts/evaluate.py
 ```
 
----
-
-## Prediction Analysis
+Prediction analysis
 
 ```
 python scripts/analyze_predictions.py
 ```
 
----
-
-## Dataset Inspection
+Dataset inspection
 
 ```
 python scripts/inspect_dataset.py
 ```
 
----
-
-## DataLoader Check
+DataLoader check
 
 ```
 python scripts/check_dataloader.py
 ```
 
----
-
-## Model Summary
+Model summary
 
 ```
 python scripts/model_summary.py
@@ -340,40 +366,22 @@ python scripts/model_summary.py
 
 ---
 
-# Experimental Analysis
-
-Several architectural variants were investigated during development, including:
-
-- different fusion strategies
-- weighted MAE loss
-- differential learning rates
-- partial fine-tuning of the visual backbone
-
-The best performing configuration was obtained using:
-
-- concatenation fusion
-- pretrained ResNet18
-- Layer4 fine-tuning
-- standard MAE loss
-
----
-
 # Future Work
 
-Possible improvements include:
+Possible future improvements include
 
-- temporal modeling with LSTM/GRU
-- Transformer-based fusion
+- temporal modeling with LSTM or GRU
+- Transformer-based multimodal fusion
 - attention mechanisms
 - distribution-aware regression losses
 - uncertainty estimation
-- improved handling of regression-to-the-mean
+- improved handling of the regression-to-the-mean effect
 
 ---
 
 # Requirements
 
-Main dependencies:
+Main dependencies
 
 - PyTorch
 - TorchVision
@@ -394,10 +402,10 @@ pip install -r requirements.txt
 
 # References
 
-ChaLearn First Impressions V2
-
 Escalante et al.
 
-"First Impressions: Apparent Personality Analysis Challenge"
+**First Impressions: Apparent Personality Analysis Challenge**
+
+ChaLearn First Impressions V2 Dataset
 
 CVPR Workshops.

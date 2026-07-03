@@ -60,8 +60,17 @@ data/raw/
 # =====================================================
 outputs/logs/
 outputs/predictions/
-outputs/figures/
 outputs/metrics/
+
+# =====================================================
+# Generated figures
+# =====================================================
+
+outputs/figures/*
+!outputs/figures/prediction_analysis/
+!outputs/figures/prediction_analysis/**
+!outputs/figures/prediction_analysis_plateau/
+!outputs/figures/prediction_analysis_plateau/**
 
 
 

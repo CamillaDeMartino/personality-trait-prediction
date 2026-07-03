@@ -65,7 +65,7 @@ def main():
     set_seed(SEED)
     device = get_device(DEVICE)
 
-    checkpoint_path = CHECKPOINTS_DIR / f"best_{FUSION_TYPE}_diff_lr.pt"
+    checkpoint_path = CHECKPOINTS_DIR / f"best_{FUSION_TYPE}_plateau.pt"
 
     if not checkpoint_path.exists():
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
@@ -116,7 +116,7 @@ def main():
     print("-" * 60)
     print(metrics)
 
-    save_json(metrics, METRICS_DIR / f"test_metrics_{FUSION_TYPE}_diff_lr.json")
+    save_json(metrics, METRICS_DIR / f"test_metrics_{FUSION_TYPE}_plateau.json")
 
     PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -133,11 +133,11 @@ def main():
 
     save_json(
         prediction_rows,
-        PREDICTIONS_DIR / f"test_predictions_{FUSION_TYPE}_diff_lr.json",
+        PREDICTIONS_DIR / f"test_predictions_{FUSION_TYPE}_plateau.json",
     )
 
-    print(f"\nSaved metrics to: {METRICS_DIR / f'test_metrics_{FUSION_TYPE}_diff_lr.json'}")
-    print(f"Saved predictions to: {PREDICTIONS_DIR / f'test_predictions_{FUSION_TYPE}_diff_lr.json'}")
+    print(f"\nSaved metrics to: {METRICS_DIR / f'test_metrics_{FUSION_TYPE}_plateau.json'}")
+    print(f"Saved predictions to: {PREDICTIONS_DIR / f'test_predictions_{FUSION_TYPE}_plateau.json'}")
 
 
 if __name__ == "__main__":

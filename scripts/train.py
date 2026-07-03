@@ -90,30 +90,18 @@ def main():
         fusion_type=FUSION_TYPE,
     ).to(device)
 
-    # optimizer = torch.optim.Adam(
-    #     model.parameters(),
-    #     lr=LEARNING_RATE,
-    # )
-
-    head_params = []
-    backbone_layer4_params = []
-
-    for name, param in model.named_parameters():
-        if not param.requires_grad:
-            continue
-
-        if "video_encoder.backbone.layer4" in name:
-            backbone_layer4_params.append(param)
-        else:
-            head_params.append(param)
-
     optimizer = torch.optim.Adam(
-        [
-            {"params": head_params, "lr": LEARNING_RATE},
-            {"params": backbone_layer4_params, "lr": LEARNING_RATE * 0.1},
-        ]
+        model.parameters(),
+        lr=LEARNING_RATE,
     )
 
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        mode="min",
+        factor=0.5,
+        patience=2,
+        min_lr=1e-6,
+    )
     best_val_mae = float("inf")
     history = []
 
@@ -146,6 +134,11 @@ def main():
 
         history.append(epoch_record)
 
+        scheduler.step(valid_metrics["mae"])
+
+        current_lr = optimizer.param_groups[0]["lr"]
+        print(f"Current learning rate: {current_lr:.8f}")
+
         print("\nTrain metrics")
         print(train_metrics)
 
@@ -158,8 +151,9 @@ def main():
                 "model_state_dict": model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
                 "valid_mae": valid_metrics["mae"],
+                "scheduler_state_dict": scheduler.state_dict(),
             },
-            CHECKPOINTS_DIR / f"last_{FUSION_TYPE}_diff_lr.pt",
+            CHECKPOINTS_DIR / f"last_{FUSION_TYPE}_plateau.pt",
         )
 
         if valid_metrics["mae"] < best_val_mae:
@@ -171,13 +165,14 @@ def main():
                     "model_state_dict": model.state_dict(),
                     "optimizer_state_dict": optimizer.state_dict(),
                     "valid_mae": best_val_mae,
+                    "scheduler_state_dict": scheduler.state_dict(),
                 },
-                CHECKPOINTS_DIR / f"best_{FUSION_TYPE}_diff_lr.pt",
+                CHECKPOINTS_DIR / f"best_{FUSION_TYPE}_plateau.pt",
             )
 
             print(f"\nNew best model saved with val MAE: {best_val_mae:.6f}")
 
-        save_json(history, METRICS_DIR / f"training_history_{FUSION_TYPE}_diff_lr.json")
+        save_json(history, METRICS_DIR / f"training_history_{FUSION_TYPE}_plateau.json")
 
     print("\nTraining completed.")
     print(f"Best validation MAE: {best_val_mae:.6f}")

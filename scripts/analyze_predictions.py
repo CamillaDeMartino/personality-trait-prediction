@@ -35,7 +35,7 @@ def plot_prediction_vs_target(predictions, targets, trait_name, trait_index, out
     plt.title(f"Prediction vs Ground Truth - {trait_name}")
     plt.tight_layout()
 
-    output_path = output_dir / f"scatter_{trait_name.lower()}_{FUSION_TYPE}.png"
+    output_path = output_dir / f"scatter_{trait_name.lower()}_{FUSION_TYPE}_plateau.png"
     plt.savefig(output_path, dpi=200)
     plt.close()
 
@@ -55,7 +55,7 @@ def plot_histogram(predictions, targets, trait_name, trait_index, output_dir):
     plt.legend()
     plt.tight_layout()
 
-    output_path = output_dir / f"hist_{trait_name.lower()}_{FUSION_TYPE}.png"
+    output_path = output_dir / f"hist_{trait_name.lower()}_{FUSION_TYPE}_plateau.png"
     plt.savefig(output_path, dpi=200)
     plt.close()
 
@@ -76,7 +76,7 @@ def plot_residuals(predictions, targets, trait_name, trait_index, output_dir):
     plt.title(f"Residuals - {trait_name}")
     plt.tight_layout()
 
-    output_path = output_dir / f"residuals_{trait_name.lower()}_{FUSION_TYPE}.png"
+    output_path = output_dir / f"residuals_{trait_name.lower()}_{FUSION_TYPE}_plateau.png"
     plt.savefig(output_path, dpi=200)
     plt.close()
 
@@ -108,8 +108,8 @@ def compute_trait_statistics(predictions, targets):
     return stats
 
 def main():
-    predictions_path = PREDICTIONS_DIR / f"test_predictions_{FUSION_TYPE}.json"
-    output_dir = FIGURES_DIR / "prediction_analysis"
+    predictions_path = PREDICTIONS_DIR / f"test_predictions_{FUSION_TYPE}_plateau.json"
+    output_dir = FIGURES_DIR / "prediction_analysis_plateau"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     predictions, targets, filenames = load_predictions(predictions_path)
@@ -152,7 +152,7 @@ def main():
 
     stats = compute_trait_statistics(predictions, targets)
 
-    analysis_path = output_dir / f"prediction_statistics_{FUSION_TYPE}.json"
+    analysis_path = output_dir / f"prediction_statistics_{FUSION_TYPE}_plateau.json"
     with open(analysis_path, "w") as f:
         json.dump(stats, f, indent=4)
 

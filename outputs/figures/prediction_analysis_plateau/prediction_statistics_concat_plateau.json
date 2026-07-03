@@ -1,0 +1,57 @@
+{
+    "Extraversion": {
+        "mae": 0.09994708001613617,
+        "rmse": 0.12502625584602356,
+        "pearson_r": 0.5583533644676208,
+        "pearson_p_value": 0.0,
+        "bias_mean_prediction_minus_target": -0.007007024250924587,
+        "target_mean": 0.47792524099349976,
+        "prediction_mean": 0.470918208360672,
+        "target_std": 0.15011131763458252,
+        "prediction_std": 0.0924198105931282
+    },
+    "Neuroticism": {
+        "mae": 0.09843795001506805,
+        "rmse": 0.12304992973804474,
+        "pearson_r": 0.5974486470222473,
+        "pearson_p_value": 0.0,
+        "bias_mean_prediction_minus_target": -0.003844489110633731,
+        "target_mean": 0.5217447876930237,
+        "prediction_mean": 0.517900288105011,
+        "target_std": 0.15328820049762726,
+        "prediction_std": 0.09563963115215302
+    },
+    "Agreeableness": {
+        "mae": 0.09462051093578339,
+        "rmse": 0.11851580440998077,
+        "pearson_r": 0.4619661867618561,
+        "pearson_p_value": 0.0,
+        "bias_mean_prediction_minus_target": -0.002856493229046464,
+        "target_mean": 0.551659345626831,
+        "prediction_mean": 0.5488028526306152,
+        "target_std": 0.13332465291023254,
+        "prediction_std": 0.06906713545322418
+    },
+    "Conscientiousness": {
+        "mae": 0.10239677876234055,
+        "rmse": 0.12795063853263855,
+        "pearson_r": 0.5494160652160645,
+        "pearson_p_value": 0.0,
+        "bias_mean_prediction_minus_target": -0.008572911843657494,
+        "target_mean": 0.5251456499099731,
+        "prediction_mean": 0.5165727734565735,
+        "target_std": 0.1525946408510208,
+        "prediction_std": 0.09028378129005432
+    },
+    "Openness": {
+        "mae": 0.09542600810527802,
+        "rmse": 0.119292713701725,
+        "pearson_r": 0.5675994157791138,
+        "pearson_p_value": 0.0,
+        "bias_mean_prediction_minus_target": -0.003361622802913189,
+        "target_mean": 0.5681722164154053,
+        "prediction_mean": 0.5648106336593628,
+        "target_std": 0.1446460634469986,
+        "prediction_std": 0.08822807669639587
+    }
+}

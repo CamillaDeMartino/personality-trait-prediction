@@ -106,7 +106,7 @@ EPOCHS = 20
 LEARNING_RATE = 1e-3
 EARLY_STOPPING_PATIENCE = 10
 
-FAST_DEV_RUN = True
+FAST_DEV_RUN = False  # set to True for a quick run to check for bugs
 FAST_TRAIN_SIZE = 1000
 FAST_VALID_SIZE = 400
 FAST_EPOCHS = 5
