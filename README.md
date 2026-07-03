@@ -216,9 +216,11 @@ Learning-rate scheduler
 
 ```
 ReduceLROnPlateau
+
+mode = min
 factor = 0.5
-patience = 3
-minimum LR = 1e-5
+patience = 2
+minimum LR = 1e-6
 ```
 
 Training epochs
@@ -277,15 +279,26 @@ To better understand the model behaviour, the repository automatically generates
 - Residual plots
 - Pearson correlation statistics
 
-An example for the **Extraversion** trait is shown below.
+The figures below compare the **baseline model** with the **final model trained using ReduceLROnPlateau**. Both examples refer to the **Extraversion** personality trait.
+
+## Baseline Model
+
+| Prediction vs Ground Truth | Distribution | Residuals |
+|:--------------------------:|:------------:|:---------:|
+| <img src="outputs/figures/prediction_analysis/scatter_extraversion_concat.png" width="300"> | <img src="outputs/figures/prediction_analysis/hist_extraversion_concat.png" width="300"> | <img src="outputs/figures/prediction_analysis/residuals_extraversion_concat.png" width="300"> |
+
+## Final Model (+ ReduceLROnPlateau)
 
 | Prediction vs Ground Truth | Distribution | Residuals |
 |:--------------------------:|:------------:|:---------:|
 | <img src="outputs/figures/prediction_analysis_plateau/scatter_extraversion_concat_plateau.png" width="300"> | <img src="outputs/figures/prediction_analysis_plateau/hist_extraversion_concat_plateau.png" width="300"> | <img src="outputs/figures/prediction_analysis_plateau/residuals_extraversion_concat_plateau.png" width="300"> |
 
-Equivalent figures are automatically generated for all five personality traits and are available in
+Although the **regression-to-the-mean** effect is still present, the introduction of the **ReduceLROnPlateau** scheduler improves the overall regression quality, reducing the test MAE from **0.1000** to **0.0982** and increasing the overall prediction accuracy.
+
+Equivalent figures are automatically generated for all five personality traits and are available in:
 
 ```
+outputs/figures/prediction_analysis/
 outputs/figures/prediction_analysis_plateau/
 ```
 
