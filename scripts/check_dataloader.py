@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import librosa.display
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -11,9 +12,11 @@ from src.config import (
     TRAIN_DIR,
     TRAIN_ANNOTATIONS,
     SEED,
+    TRAIT_NAMES_PRETTY,
 )
 from src.data.first_impressions_dataset import FirstImpressionsDataset
 from src.utils import set_seed
+from src.data.audio import preprocess_audio
 
 
 def main():
@@ -55,6 +58,11 @@ def main():
     print(f"Video batch : {batch['video'].shape}")
     print(f"Labels batch: {batch['labels'].shape}")
 
+    print("\nGround truth personality scores")
+    print("------------------------------")
+    for trait, value in zip(TRAIT_NAMES_PRETTY, sample["labels"]):
+        print(f"{trait:18s}: {value.item():.4f}")
+
     fig, axes = plt.subplots(2, 3, figsize=(10, 6))
 
     for i in range(6):
@@ -75,6 +83,36 @@ def main():
     plt.close()
 
     print(f"\nSaved dataset preview to: {output_path}")
+
+    # =====================================================
+    # MFCC visualization
+    # =====================================================
+
+    mfcc = sample["audio"].squeeze(0).numpy()
+
+    plt.figure(figsize=(10, 4))
+
+    librosa.display.specshow(
+        mfcc,
+        x_axis="time",
+        cmap="viridis",
+    )
+
+    plt.colorbar()
+    plt.title(f"MFCC Representation\n{sample['filename']}")
+    plt.ylabel("MFCC coefficient")
+    plt.tight_layout()
+
+    mfcc_path = output_dir / "audio_mfcc.png"
+
+    plt.savefig(
+        mfcc_path,
+        dpi=200,
+    )
+
+    plt.close()
+
+    print(f"Saved MFCC visualization to: {mfcc_path}")
 
 if __name__ == "__main__":
     main()
